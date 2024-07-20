@@ -1,0 +1,4 @@
+title,author,rating,description,language,genres,pages,basePrice,discountPercent,discountPrice,publisher,cover,salesNum
+TrucTest4,ABC,4,…,Eng,science fiction,100,100000,20,0,DEF,https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1348227470l/440417.jpg,0
+TrucTest5,ABC,4,…,Eng,science fiction,100,100000,20,0,DEF,https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1348227470l/440417.jpg,0
+TrucTest6,ABC,4,…,Eng,science fiction,100,100000,20,0,DEF,https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1348227470l/440417.jpg,0

@@ -1,0 +1,4 @@
+title,author,rating,description,language,genres,pages,basePrice,discountPercent,publisher,cover
+TrucTest1,ABC,4,…,Eng,Children,100,100000,20,DEF,https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1348227470l/440417.jpg
+TrucTest2,ABC,4,…,Eng,Children,100,100000,20,DEF,https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1348227470l/440417.jpg
+TrucTest3,ABC,4,…,Eng,Children,100,100000,20,DEF,https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1348227470l/440417.jpg
