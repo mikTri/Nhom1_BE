@@ -35,7 +35,8 @@ const mailRoutes = require('./routes/mailBox');
 const newsRoutes = require('./routes/news');
 const reviewRoutes = require('./routes/bookReviews');
 const authorRoutes = require('./routes/authors.js'); 
-
+const searchRoutes = require('./routes/search.js');
+app.use(`/api/search`, searchRoutes);
 app.use("/api", imageUploadRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/staff", staffRoutes);
