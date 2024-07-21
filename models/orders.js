@@ -23,7 +23,7 @@ const ordersSchema = mongoose.Schema({
     },
     paymentId: {
         type: String,
-        required: true
+        required: false
     },
     email: {
         type: String,
