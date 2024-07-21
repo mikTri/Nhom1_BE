@@ -4,27 +4,6 @@ const router = express.Router();
 
 
 
-// router.get(`/`, async (req, res) => {
-
-//     try {
-    
-
-//         const ordersList = await Orders.find(req.query)
-
-
-//         if (!ordersList) {
-//             res.status(500).json({ success: false })
-//         }
-
-//         return res.status(200).json(ordersList);
-
-//     } catch (error) {
-//         res.status(500).json({ success: false })
-//     }
-
-
-// });
-
 router.get(`/`, async (req, res) => {
     try{
         const page = parseInt(req.query.page) || 1;

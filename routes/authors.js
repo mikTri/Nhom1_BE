@@ -2,6 +2,24 @@ const { Authors } = require('../models/authors.js');
 const express = require('express');
 const router = express.Router();
 
+
+//get all (truc adds)
+router.get(`/all`, async (req, res) => {
+    try {
+
+        const authorList = await Authors.find(req.query);
+
+        if (!authorList) {
+            res.status(500).json({ success: false })
+        }
+
+        return res.status(200).json(authorList);
+
+    } catch (error) {
+        res.status(500).json({ success: false })
+    }
+});
+
 router.get(`/`, async (req, res) => {
 
     try {
