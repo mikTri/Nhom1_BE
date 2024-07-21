@@ -111,7 +111,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
 });
 
 //get all books
-router.get(`/`, async (req, res) => {
+router.get(`/all`, async (req, res) => {
   try {
       const booksPerPage = req.query.booksPerPage ? parseInt(req.query.booksPerPage) : 20;
       const page = req.query.page ? parseInt(req.query.page) : 0; 
