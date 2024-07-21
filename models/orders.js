@@ -57,7 +57,8 @@ const ordersSchema = mongoose.Schema({
     ],
     status:{
         type:String,
-        default:"pending"
+        //default:"pending",
+        required: true
     },
     date: {
         type: Date,

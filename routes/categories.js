@@ -3,24 +3,6 @@ const express = require('express');
 const router = express.Router();
 
 
-//get all (truc adds)
-router.get(`/all`, async (req, res) => {
-
-    try {
-
-        const catList = await Category.find(req.query);
-
-        if (!catList) {
-            res.status(500).json({ success: false })
-        }
-
-        return res.status(200).json(catList);
-
-    } catch (error) {
-        res.status(500).json({ success: false })
-    }
-});
-
 router.get(`/`, async (req, res) => {
 
     try {

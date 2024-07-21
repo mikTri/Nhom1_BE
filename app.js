@@ -1,11 +1,9 @@
-require("dotenv").config();
-
-const express = require('express'); // Framework web cho Node.js, giúp dựng các ứng dụng web và API
-const app = express();  // Tạo một đối tượng ứng dụng Express, lưu trong biến app. Sử dụng để thiết lập các route và middleware cho ứng dụng
-const bodyParser = require('body-parser'); // Body-parser là một middleware để phân tích cú pháp body của các request HTTP, thường được sử dụng để xử lý dữ liệu dạng JSON, text, hoặc URL-encoded từ các form gửi lên server.
-const cors = require('cors'); // CORS (Cross-Origin Resource Sharing) là một cơ chế cho phép các tài nguyên bị giới hạn trên một trang web có thể được yêu cầu từ một trang web khác nằm trên domain khác
-const mongoose = require('mongoose'); // Mongoose là một thư viện để kết nối và làm việc với MongoDB
-
+const express = require('express');
+const app = express();
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const cors = require('cors');
+require('dotenv/config');
 const port = process.env.PORT;
 const conn = process.env.CONNECTION_STRING;
 
@@ -35,6 +33,8 @@ const mailRoutes = require('./routes/mailBox');
 const newsRoutes = require('./routes/news');
 const reviewRoutes = require('./routes/bookReviews');
 const authorRoutes = require('./routes/authors.js'); 
+const searchRoutes = require('./routes/search.js');
+
 
 app.use("/api", imageUploadRoutes);
 app.use("/api/user", userRoutes);
@@ -50,6 +50,7 @@ app.use('/api/mailBox', mailRoutes);
 app.use(`/api/news`, newsRoutes);
 app.use(`/api/reviews`, reviewRoutes);
 app.use(`/api/authors`, authorRoutes);
+app.use(`/api/search`, searchRoutes);
 
 // Kết nối tới MongoDB
 mongoose.connect(conn)
