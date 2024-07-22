@@ -23,7 +23,7 @@ const ordersSchema = mongoose.Schema({
     },
     paymentId: {
         type: String,
-        required: false
+        required: true
     },
     email: {
         type: String,
@@ -57,7 +57,7 @@ const ordersSchema = mongoose.Schema({
     ],
     status:{
         type:String,
-        default:"pending"
+        default:"paid"
     },
     date: {
         type: Date,
