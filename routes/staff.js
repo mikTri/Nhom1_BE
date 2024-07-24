@@ -96,7 +96,7 @@ router.post(`/signin`, async (req, res) => {
     try{
         const existingStaff = await Staff.findOne({ email: email });
         if(!existingStaff){
-            res.status(404).json({error:true, msg:"Tài khoản của bạn không tồn tại!"});
+            return res.status(404).json({error:true, msg:"Tài khoản của bạn không tồn tại!"});
         }
 
         const matchPassword = await bcrypt.compare(password, existingStaff.password);
@@ -196,78 +196,113 @@ router.put('/:id',async (req, res)=> {
 })
 
 // PUT (đổi password - dành cho staff tự đổi)
-router.put(`/changePassword/:id`, async (req, res) => {
-   
-    const { name, phone, email, password, newPass, images } = req.body;
+router.put('/changePassword/:id', async (req, res) => {
+    const { email, password, newPass } = req.body;
 
-   // console.log(req.body)
+    try {
+        console.log("Received request to change password for email");
 
-    const existingStaff = await Staff.findOne({ email: email });
-    if(!existingStaff){
-        res.status(404).json({error:true, msg:"Staff not found!"})
-    }
-
-    const matchPassword = await bcrypt.compare(password, existingStaff.password);
-
-    if(!matchPassword){
-        return res.json({error:true,msg:"current password wrong"})
-    }
-    else{
-        let newPassword
-        if(newPass) {
-            newPassword = bcrypt.hashSync(newPass, 10)
-        } else {
-            newPassword = existingStaff.password;
+        // Tìm nhân viên bằng email
+        const existingStaff = await Staff.findOne({ email: email });
+        if (!existingStaff) {
+            console.log("Staff not found with email:", email);
+            return res.status(404).json({ error: true, msg: "Không tìm thấy email của bạn!" });
         }
-           
-        const staff = await Staff.findByIdAndUpdate(
-            req.params.id,
-            {
-                name:name,
-                phone:phone,
-                email:email,
-                password:newPassword,
-                images: images,
-            },
-            { new: true}
-        )
-    
-        if(!staff)
-        return res.status(400).send('the staff cannot be Updated!')
-    
-        res.send(staff);
-    }
+        console.log("Staff found:", existingStaff);
 
+        // Kiểm tra mật khẩu hiện tại
+        const matchPassword = await bcrypt.compare(password, existingStaff.password);
+        if (!matchPassword) {
+            console.log("Current password is incorrect for email:", email, ", " , password, ", ", newPass);
+            return res.status(400).json({ error: true, msg: "Mật khẩu hiện tại không đúng" });
+        }
+        else{
+            console.log("Current password is correctL: ", email, ", " , password, ", ", newPass);
+
+            // Kiểm tra mật khẩu mới
+            if (!newPass) {
+                console.log("New password is not provided", email, ", " , password, ", ", newPass);
+                return res.status(400).json({ error: true, msg: "Vui lòng cùng cấp mật khẩu mới" });
+            }
+            else{
+                console.log("New password provided");
+    
+                const newPassword = bcrypt.hashSync(newPass, 10);
+                console.log("New password hashed");
+        
+                // Cập nhật mật khẩu
+                const staff = await Staff.findByIdAndUpdate(
+                    req.params.id,
+                    { password: newPassword },
+                    { new: true }
+                );
+        
+                if (!staff) {
+                    console.log("Failed to update staff with id:", req.params.id);
+                    return res.status(400).json({ error: true, msg: 'Không thể cập nhật mật khẩu cho nhân viên!' });
+                }
+                else{
+                    console.log("Staff password updated successfully:", staff);
+        
+                    res.json({ success: true, staff });
+                }
+                
+            }
+            
+        }
+        
+    } catch (error) {
+        console.error("Server error:", error);
+        res.status(500).json({ error: true, msg: "Server error" });
+    }
 })
+
 
 // PUT (đổi password - dành cho Admin đổi cho staff (không cần nhập password cũ))
 router.put(`/changePasswordbyAdmin/:id`, async (req, res) => {
-    const { email, password, role, newPassword } = req.body;
+    const { email, password, newPass } = req.body;
+    console.log("email, password, newPassword:  ", email, password, newPass);
 
     try {
-        // Check if staff is authenticated and has admin role (role = 1)
-        const staff = await Staff.findOne({ email: email, password: password, role: 1 });
-        if (!staff) {
-            return res.status(401).json({ error: 'Unauthorized access' });
+        // Tìm admin bằng email
+        const admin = await Staff.findOne({ email: email });
+        if (!admin || admin.role !== 1) {
+            return res.status(403).json({ error: true, msg: 'Đây không phải là tài khoản admin' });
+        }
+        console.log("Tìm admin bằng email thành công");
+
+        // Xác thực mật khẩu admin
+        const matchPassword = await bcrypt.compare(password, admin.password);
+        if (!matchPassword) {
+            return res.status(401).json({ error: true, msg: 'Mật khẩu admin không đúng' });
+        }
+        console.log("Xác thực mật khẩu admin thành công");
+
+        // Kiểm tra xem mật khẩu mới có hợp lệ không
+        if (!newPass || typeof newPass !== 'string') {
+            console.log("Mật khẩu mới không hợp lệ hoặc không được cung cấp");
+            return res.status(400).json({ error: true, msg: 'Mật khẩu mới không hợp lệ' });
         }
 
-        // Hash the new password before updating
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-        const otherStaffUpd = await Staff.findByIdAndUpdate(
+        // Hash the user's password 
+        const hashedPassword = await bcrypt.hash(newPass, 10);
+
+        // update new user's password
+        const updatedUser = await Staff.findByIdAndUpdate(
             req.params.id,
-            {
-                password:hashedPassword
-            },
+            { password:hashedPassword },
             { new: true}
         );
     
-        if(!otherStaffUpd)
-            return res.status(400).send('the staff cannot be Updated!');
-    
-        res.send(otherStaffUpd);
+        if(!updatedUser){
+            return res.status(400).send('Không thể cập nhật mật khẩu cho nhân viên!');
+        }
+        console.log("update new user password");
+            
+        res.json({ success: true, staff: updatedUser });
 
     } catch (error) {
-        console.error(error);
+        console.error("Lỗi cập nhật mật khẩu bằng tài khoản admin", error);
         res.status(500).json({ error: 'Server error' });
     }
 });

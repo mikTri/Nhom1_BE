@@ -14,7 +14,7 @@ const booksSchema = new mongoose.Schema({
     publisher: String,
     cover: String,
     salesNum: { type: Number,  default: 0 },
-    isFSale: { type:Boolean, default: false }
+    isFSale: { type:Boolean, default:"false" }
 });
 
 

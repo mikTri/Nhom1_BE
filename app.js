@@ -35,6 +35,7 @@ const mailRoutes = require('./routes/mailBox');
 const newsRoutes = require('./routes/news');
 const reviewRoutes = require('./routes/bookReviews');
 const authorRoutes = require('./routes/authors.js'); 
+const searchRoutes = require('./routes/search.js');
 
 app.use("/api", imageUploadRoutes);
 app.use("/api/user", userRoutes);
@@ -50,6 +51,7 @@ app.use('/api/mailBox', mailRoutes);
 app.use(`/api/news`, newsRoutes);
 app.use(`/api/reviews`, reviewRoutes);
 app.use(`/api/authors`, authorRoutes);
+app.use(`/api/search`, searchRoutes);
 
 // Kết nối tới MongoDB
 mongoose.connect(conn)

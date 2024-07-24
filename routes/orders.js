@@ -12,7 +12,7 @@ router.get(`/`, async (req, res) => {
         const totalPages = Math.ceil(totalPosts / perPage);
 
         if (page > totalPages){
-            return res.status(404).jsnon({message: "No data found!"})
+           return res.status(404).jsnon({message: "No data found!"})
         }
 
         const ordersList = await Orders.find()
@@ -34,6 +34,23 @@ router.get(`/`, async (req, res) => {
     }
 });
 
+//get all 
+router.get(`/all`, async (req, res) => {
+
+    try {
+
+        const orderList = await Orders.find(req.query);
+
+        if (!orderList) {
+            res.status(500).json({ success: false })
+        }
+
+        return res.status(200).json(orderList);
+
+    } catch (error) {
+        res.status(500).json({ success: false })
+    }
+});
 
 router.get('/:id', async (req, res) => {
 
@@ -66,6 +83,7 @@ router.post('/create', async (req, res) => {
         address: req.body.address,
         // pincode: req.body.pincode,
         amount: req.body.amount,
+        status: req.body.status,
         paymentId: req.body.paymentId,
         email: req.body.email,
         userid: req.body.userid,
