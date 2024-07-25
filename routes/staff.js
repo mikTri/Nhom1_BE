@@ -63,7 +63,7 @@ router.post(`/signup`, async (req, res) => {
         const existingStaffByPh = await Staff.findOne({ phone: phone });
 
         if (existingStaff && existingStaffByPh) {
-            res.status(400).json({error:true, msg: "Tài khoản này đã tồn tại!" })
+            return res.status(400).json({error:true, msg: "Tài khoản này đã tồn tại!" });
         }
 
         const hashPassword = await bcrypt.hash(password,10);
@@ -142,7 +142,7 @@ router.get('/:id', async(req,res)=>{
     const staff = await Staff.findById(req.params.id);
 
     if(!staff) {
-        res.status(500).json({message: 'The staff with the given ID was not found.'})
+        return res.status(500).json({message: 'The staff with the given ID was not found.'})
     } 
     res.status(200).send(staff);
 })
@@ -152,7 +152,7 @@ router.get(`/get/count`, async (req, res) =>{
     const staffCount = await Staff.countDocuments()
 
     if(!staffCount) {
-        res.status(500).json({success: false})
+        return res.status(500).json({success: false})
     } 
     res.send({
         staffCount: staffCount
@@ -164,17 +164,16 @@ router.put('/:id',async (req, res)=> {
 
     const { name, phone, email, address, images, role} = req.body;
 
-    const staffExist = await Staff.findById(req.params.id);
-    if(!staffExist){
-        res.status(404).json({error:true, msg:"Tài khoản không tồn tại"})
-    }
+    console.log("Received request to change staff info");
 
-    // // change password
-    // if(req.body.password) {
-    //     newPassword = bcrypt.hashSync(req.body.password, 10)
-    // } else {
-    //     newPassword = staffExist.password;
-    // }
+    // Tìm nhân viên bằng email
+    const existingStaff = await Staff.findOne({ email: email });
+    if (!existingStaff) {
+        console.log("Staff not found with email:", email);
+        return res.status(404).json({ error: true, msg: "Không tìm thấy email của bạn!" });
+    }
+    console.log("Staff found:", existingStaff);
+
 
     const staff = await Staff.findByIdAndUpdate(
         req.params.id,
@@ -338,7 +337,7 @@ router.delete('/:id', async(req, res)=>{
     const deletedStaff = await Staff.findByIdAndDelete(req.params.id);
 
     if (!deletedStaff) {
-        res.status(404).json({ message: 'Staff not found!', success: false })
+        return res.status(404).json({ message: 'Staff not found!', success: false })
     }
     res.status(200).json({ success: true, message: 'the staff is deleted!' })
 })
