@@ -93,7 +93,7 @@ router.post(`/signin`, async (req, res) => {
     try{
         const existingUser = await User.findOne({ email: email });
         if(!existingUser){
-            res.status(404).json({error:true, msg:"User not found!"});
+            return res.status(404).json({error:true, msg:"User not found!"});
         }
 
         const matchPassword = await bcrypt.compare(password, existingUser.password);
@@ -107,7 +107,7 @@ router.post(`/signin`, async (req, res) => {
        return res.status(200).send({ user:existingUser, token:token, msg:"user Authenticated" });
     }
     catch (error) {
-        res.status(500).json({error:true,msg:"Lỗi đăng nhập!"});
+       res.status(500).json({error:true,msg:"Lỗi đăng nhập!"});
     }
 })
 
