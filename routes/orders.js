@@ -81,7 +81,6 @@ router.post('/create', async (req, res) => {
         address: req.body.address,
         // pincode: req.body.pincode,
         amount: req.body.amount,
-        status: req.body.status,
         paymentId: req.body.paymentId,
         email: req.body.email,
         userid: req.body.userid,
