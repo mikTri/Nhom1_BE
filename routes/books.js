@@ -453,7 +453,13 @@ try {
   const newGenres = req.body.genres || oldGenres;
   const oldAuthor = currentBook.author;
   const newAuthor = req.body.author || oldAuthor; // Use old author if new author is not provided
-
+  
+   // Calculate new discountPrice if discountPercent or basePrice is provided
+   if (req.body.discountPercent !== undefined || req.body.basePrice !== undefined) {
+    const basePrice = req.body.basePrice || currentBook.basePrice;
+    const discountPercent = req.body.discountPercent || currentBook.discountPercent;
+    req.body.discountPrice = basePrice * (1 - discountPercent / 100);
+}
   console.log(`Old genres: ${oldGenres}, New genres: ${newGenres}`);
   console.log(`Old author: ${oldAuthor}, New author: ${newAuthor}`);
 
