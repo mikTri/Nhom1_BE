@@ -118,17 +118,45 @@ router.post("/upload", upload.single("file"), async (req, res) => {
     });
 });
 
-router.get(`/all`, async (req, res) => {
+//get all book new with phan trang
+router.get('/all', async (req, res) => {
   try {
-    const bookList = await Book.find(req.query);
+    // Lấy giá trị page và limit từ query string, mặc định page = 1 và limit = 20
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
 
-    if (!bookList) {
-      res.status(500).json({ success: false });
+    // Tính toán số lượng bản ghi cần bỏ qua (skip)
+    const skip = (page - 1) * limit;
+
+    // Lọc theo các query khác nếu có
+    const filters = req.query;
+    delete filters.page;  // Loại bỏ query 'page' khỏi filters
+
+    // Tìm sách với filters đã được phân trang
+    const bookList = await Book.find(filters)
+      .skip(skip)      // Bỏ qua số lượng bản ghi dựa trên trang
+      .limit(limit);   // Giới hạn số lượng bản ghi trên mỗi trang
+
+    // Lấy tổng số sách để tính toán số trang
+    const totalBooks = await Book.countDocuments(filters);
+
+    // Nếu không tìm thấy sách nào
+    if (!bookList || bookList.length === 0) {
+      return res.status(404).json({ success: false, message: 'No books found' });
     }
 
-    return res.status(200).json(bookList);
+    // Trả về kết quả bao gồm dữ liệu sách và thông tin phân trang
+    return res.status(200).json({
+      success: true,
+      books: bookList,
+      totalBooks: totalBooks,
+      page: page,
+      totalPages: Math.ceil(totalBooks / limit), // Tính số trang
+      booksPerPage: limit,
+    });
   } catch (error) {
-    res.status(500).json({ success: false });
+    console.error(`Error: ${error.message}`);
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 
