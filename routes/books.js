@@ -117,48 +117,62 @@ router.post("/upload", upload.single("file"), async (req, res) => {
       res.status(500).json({ message: "Error processing CSV" });
     });
 });
-
-//get all book new with phan trang
-router.get('/all', async (req, res) => {
+//get all book ko so sanh dk
+router.get(`/all`, async (req, res) => {
   try {
-    // Lấy giá trị page và limit từ query string, mặc định page = 1 và limit = 20
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 20;
+    const bookList = await Book.find(req.query);
 
-    // Tính toán số lượng bản ghi cần bỏ qua (skip)
-    const skip = (page - 1) * limit;
-
-    // Lọc theo các query khác nếu có
-    const filters = req.query;
-    delete filters.page;  // Loại bỏ query 'page' khỏi filters
-
-    // Tìm sách với filters đã được phân trang
-    const bookList = await Book.find(filters)
-      .skip(skip)      // Bỏ qua số lượng bản ghi dựa trên trang
-      .limit(limit);   // Giới hạn số lượng bản ghi trên mỗi trang
-
-    // Lấy tổng số sách để tính toán số trang
-    const totalBooks = await Book.countDocuments(filters);
-
-    // Nếu không tìm thấy sách nào
-    if (!bookList || bookList.length === 0) {
-      return res.status(404).json({ success: false, message: 'No books found' });
+    if (!bookList) {
+      res.status(500).json({ success: false });
     }
 
-    // Trả về kết quả bao gồm dữ liệu sách và thông tin phân trang
-    return res.status(200).json({
-      success: true,
-      books: bookList,
-      totalBooks: totalBooks,
-      page: page,
-      totalPages: Math.ceil(totalBooks / limit), // Tính số trang
-      booksPerPage: limit,
-    });
+    return res.status(200).json(bookList);
   } catch (error) {
-    console.error(`Error: ${error.message}`);
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({ success: false });
   }
 });
+
+// //get all book new with phan trang
+// router.get('/all', async (req, res) => {
+//   try {
+//     // Lấy giá trị page và limit từ query string, mặc định page = 1 và limit = 20
+//     const page = parseInt(req.query.page) || 1;
+//     const limit = parseInt(req.query.limit) || 20;
+
+//     // Tính toán số lượng bản ghi cần bỏ qua (skip)
+//     const skip = (page - 1) * limit;
+
+//     // Lọc theo các query khác nếu có
+//     const filters = req.query;
+//     delete filters.page;  // Loại bỏ query 'page' khỏi filters
+
+//     // Tìm sách với filters đã được phân trang
+//     const bookList = await Book.find(filters)
+//       .skip(skip)      // Bỏ qua số lượng bản ghi dựa trên trang
+//       .limit(limit);   // Giới hạn số lượng bản ghi trên mỗi trang
+
+//     // Lấy tổng số sách để tính toán số trang
+//     const totalBooks = await Book.countDocuments(filters);
+
+//     // Nếu không tìm thấy sách nào
+//     if (!bookList || bookList.length === 0) {
+//       return res.status(404).json({ success: false, message: 'No books found' });
+//     }
+
+//     // Trả về kết quả bao gồm dữ liệu sách và thông tin phân trang
+//     return res.status(200).json({
+//       success: true,
+//       books: bookList,
+//       totalBooks: totalBooks,
+//       page: page,
+//       totalPages: Math.ceil(totalBooks / limit), // Tính số trang
+//       booksPerPage: limit,
+//     });
+//   } catch (error) {
+//     console.error(`Error: ${error.message}`);
+//     res.status(500).json({ success: false, message: error.message });
+//   }
+// });
 
 //get all books
 router.get(`/`, async (req, res) => {
