@@ -1,4 +1,4 @@
-
+ 
 // const { User } = require('../models/user');
 // const { Staff } = require('../models/staff');
 // const { ImageUpload } = require('../models/imageUpload');
@@ -356,7 +356,27 @@ router.get("/:id", async (req, res) => {
   }
   res.status(200).send(user);
 });
+// // GET (userList)   (ok)
+router.get(`/`, async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const perPage = parseInt(req.query.perPage);
+    const totalUserPosts = await User.countDocuments();
+    const totalPages = Math.ceil(totalUserPosts / perPage);
 
+    if (page > totalPages) {
+        return res.status(404).json({ message: "Page not found" })
+    }
+
+	const userList = await User.find();
+	if(!userList) {
+		res.status(500).json({success: false})
+	} 
+	return res.status(200).json({
+								"users": userList,
+								"totalPages": totalPages,
+								"page": page
+							});
+});
 // Tao user khi sign up
 router.post(`/signup`, async (req, res) => {
   const {
